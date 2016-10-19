@@ -42,6 +42,8 @@ public class ValidateTest
         ReporterConfig.loadFromFileAndValidate("src/test/resources/sample/graphite.yaml");
         ReporterConfig.loadFromFileAndValidate("src/test/resources/sample/influxdb.yaml");
         ReporterConfig.loadFromFileAndValidate("src/test/resources/sample/multi.yaml");
+        ReporterConfig.loadFromFileAndValidate("src/test/resources/sample/hawkular-minimal.yaml");
+        ReporterConfig.loadFromFileAndValidate("src/test/resources/sample/hawkular.yaml");
     }
 
     @Test

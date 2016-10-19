@@ -14,18 +14,22 @@
 
 package com.addthis.metrics3.reporter.config;
 
+import java.util.Map;
+
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hawkular.client.dropwizard.HawkularReporter;
-import org.hawkular.client.dropwizard.HawkularReporterBuilder;
+import org.hawkular.client.dropwizard.HawkularReporterNullableConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.addthis.metrics.reporter.config.AbstractMetricReporterConfig;
 import com.codahale.metrics.MetricRegistry;
 
-public class HawkularReporterConfig extends AbstractMetricReporterConfig implements MetricsReporterConfigThree {
+public class HawkularReporterConfig extends AbstractMetricReporterConfig implements MetricsReporterConfigThree,
+        HawkularReporterNullableConfig {
 
     private static final Logger log = LoggerFactory.getLogger(HawkularReporterConfig.class);
     private HawkularReporter reporter;
@@ -36,6 +40,19 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     private String tenant;
     @Valid
     private String prefix;
+    @Valid
+    private String bearerToken;
+    @Valid
+    private Map<String, String> headers;
+    @Valid
+    private Map<String, String> globalTags;
+    @Valid
+    private Map<String, Map<String, String>> perMetricTags;
+    @Valid
+    @Min(0)
+    private Long tagsCacheDuration;
+    @Valid
+    private Boolean autoTagging;
 
     public String getUri() {
         return uri;
@@ -61,6 +78,61 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
         this.prefix = prefix;
     }
 
+    public String getBearerToken() {
+        return bearerToken;
+    }
+
+    public void setBearerToken(String bearerToken) {
+        this.bearerToken = bearerToken;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public Map<String, String> getGlobalTags() {
+        return globalTags;
+    }
+
+    public void setGlobalTags(Map<String, String> globalTags) {
+        this.globalTags = globalTags;
+    }
+
+    public Map<String, Map<String, String>> getPerMetricTags() {
+        return perMetricTags;
+    }
+
+    public void setPerMetricTags(Map<String, Map<String, String>> perMetricTags) {
+        this.perMetricTags = perMetricTags;
+    }
+
+    public Long getTagsCacheDuration() {
+        return tagsCacheDuration;
+    }
+
+    public void setTagsCacheDuration(Long tagsCacheDuration) {
+        this.tagsCacheDuration = tagsCacheDuration;
+    }
+
+    public Boolean getAutoTagging() {
+        return autoTagging;
+    }
+
+    public void setAutoTagging(Boolean autoTagging) {
+        this.autoTagging = autoTagging;
+    }
+
+    public HawkularReporter enableAndGet(MetricRegistry registry) {
+        if (enable(registry)) {
+            return reporter;
+        }
+        return null;
+    }
+
     @Override
     public void report() {
         if (reporter != null) {
@@ -76,19 +148,13 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
             return false;
         }
         try {
-            HawkularReporterBuilder builder = HawkularReporter.builder(registry, tenant)
+            reporter = HawkularReporter.builder(registry, tenant)
+                    .withNullableConfig(this)
                     .convertRatesTo(getRealRateunit())
                     .convertDurationsTo(getRealDurationunit())
-                    .filter(MetricFilterTransformer.generateFilter(getPredicate()));
-            if (uri != null) {
-                builder.uri(uri);
-            }
-            if (prefix != null) {
-                builder.uri(prefix);
-            }
-            reporter = builder.build();
+                    .filter(MetricFilterTransformer.generateFilter(getPredicate()))
+                    .build();
             reporter.start(getPeriod(), getRealTimeunit());
-
         }
         catch (Exception e) {
             log.error("Failed to enable HawkularReporter", e);
