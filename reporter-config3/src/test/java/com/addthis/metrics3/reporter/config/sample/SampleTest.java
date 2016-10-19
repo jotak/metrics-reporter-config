@@ -14,11 +14,8 @@
 
 package com.addthis.metrics3.reporter.config.sample;
 
-import com.addthis.metrics3.reporter.config.ReporterConfig;
-
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -26,8 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.addthis.metrics3.reporter.config.ReporterConfig;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 
 // TODO: Make this an integration test
@@ -151,6 +150,16 @@ public class SampleTest {
         ReporterConfig config = ReporterConfig.loadFromFile("src/test/resources/sample/multi.yaml");
         System.out.println(yaml.dump(config));
         log.info("Multi Reporter");
+        runLoop(config);
+    }
+
+    @Test
+    public void sampleHawkular() throws Exception {
+        ReporterConfig config = ReporterConfig.loadFromFile("src/test/resources/sample/hawkular.yaml");
+        System.out.println(yaml.dump(config));
+        log.info("Sample Hawkular");
+        assertNotNull(config.getHawkular());
+        assertEquals(1, config.getHawkular().size());
         runLoop(config);
     }
 

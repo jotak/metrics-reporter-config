@@ -1,0 +1,4 @@
+hawkular:
+  -
+    tenant: 'my-tenant'
+    period: 2
