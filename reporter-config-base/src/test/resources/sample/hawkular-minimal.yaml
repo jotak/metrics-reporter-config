@@ -1,4 +1,5 @@
 hawkular:
   -
     tenant: 'my-tenant'
+    timeunit: 'SECONDS'
     period: 2
