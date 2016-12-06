@@ -20,8 +20,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.hawkular.client.dropwizard.HawkularReporter;
-import org.hawkular.client.dropwizard.HawkularReporterNullableConfig;
+import org.hawkular.metrics.dropwizard.HawkularReporter;
+import org.hawkular.metrics.dropwizard.HawkularReporterNullableConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +53,16 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     private Long tagsCacheDuration;
     @Valid
     private Boolean autoTagging;
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
     public String getUri() {
         return uri;
@@ -142,7 +152,7 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
 
     @Override
     public boolean enable(MetricRegistry registry) {
-        final String className = "org.hawkular.client.dropwizard.HawkularReporter";
+        final String className = "org.hawkular.metrics.dropwizard.HawkularReporter";
         if (!isClassAvailable(className)) {
             log.error("Tried to enable HawkularReporter, but class {} was not found", className);
             return false;
