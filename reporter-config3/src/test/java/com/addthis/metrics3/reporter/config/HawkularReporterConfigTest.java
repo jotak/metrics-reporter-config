@@ -19,6 +19,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
+
 import org.hawkular.metrics.dropwizard.HawkularReporter;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
@@ -59,5 +61,27 @@ public class HawkularReporterConfigTest {
         assertEquals(0, hawkularReporter.getPerMetricTags().size());
         assertEquals(600000, hawkularReporter.getTagsCacheDuration());
         assertTrue(hawkularReporter.isEnableAutoTagging());
+    }
+
+    @Test
+    public void usePlainPrefix() {
+        String prefix = "test";
+        HawkularReporterConfig config = new HawkularReporterConfig();
+        config.setPrefix(prefix);
+        assertEquals(prefix, config.getPrefix());
+    }
+
+    @Test
+    public void useHostnamePrefix() throws Exception {
+        String prefix = "${host.name}";
+        HawkularReporterConfig config = new HawkularReporterConfig();
+        config.setPrefix(prefix);
+        assertEquals(sanitize(InetAddress.getLocalHost().getHostName()), config.getPrefix());
+    }
+
+    // For now this is copied from AbstractHostReporterConfig since the method is private, and it is just needed for
+    // a simple test.
+    private String sanitize(String string) {
+        return string.replaceAll("[^a-zA-Z0-9_-]", "_");
     }
 }
