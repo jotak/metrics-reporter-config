@@ -14,21 +14,26 @@
 
 package com.addthis.metrics3.reporter.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.hawkular.client.dropwizard.HawkularReporter;
-import org.hawkular.client.dropwizard.HawkularReporterNullableConfig;
+import org.hawkular.metrics.dropwizard.HawkularReporter;
+import org.hawkular.metrics.dropwizard.HawkularReporterNullableConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.addthis.metrics.reporter.config.AbstractMetricReporterConfig;
+import com.addthis.metrics.reporter.config.AbstractHostPortReporterConfig;
+import com.addthis.metrics.reporter.config.HostPort;
 import com.codahale.metrics.MetricRegistry;
 
-public class HawkularReporterConfig extends AbstractMetricReporterConfig implements MetricsReporterConfigThree,
+public class HawkularReporterConfig extends AbstractHostPortReporterConfig implements MetricsReporterConfigThree,
         HawkularReporterNullableConfig {
 
     private static final Logger log = LoggerFactory.getLogger(HawkularReporterConfig.class);
@@ -39,13 +44,11 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     @NotNull
     private String tenant;
     @Valid
-    private String prefix;
-    @Valid
     private String bearerToken;
     @Valid
     private Map<String, String> headers;
     @Valid
-    private Map<String, String> globalTags;
+    private Map<String, String> globalTags = new HashMap<>();
     @Valid
     private Map<String, Map<String, String>> perMetricTags;
     @Valid
@@ -53,6 +56,17 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     private Long tagsCacheDuration;
     @Valid
     private Boolean autoTagging;
+    @Valid
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
     public String getUri() {
         return uri;
@@ -70,12 +84,9 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
         this.tenant = tenant;
     }
 
+    @Override
     public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+        return getResolvedPrefix();
     }
 
     public String getBearerToken() {
@@ -99,7 +110,7 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     }
 
     public void setGlobalTags(Map<String, String> globalTags) {
-        this.globalTags = globalTags;
+        this.globalTags.putAll(globalTags);
     }
 
     public Map<String, Map<String, String>> getPerMetricTags() {
@@ -126,6 +137,22 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
         this.autoTagging = autoTagging;
     }
 
+    public Boolean getEnableHostnameTag() {
+        return globalTags.get("hostname") != null;
+    }
+
+    public void setEnableHostnameTag(Boolean enableHostnameTag) {
+        try {
+            globalTags.put("hostname", InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Failed to acquire hostname", e);
+        }
+    }
+
+    @Override public List<HostPort> getFullHostList() {
+        return getHostListAndStringList();
+    }
+
     public HawkularReporter enableAndGet(MetricRegistry registry) {
         if (enable(registry)) {
             return reporter;
@@ -142,7 +169,7 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
 
     @Override
     public boolean enable(MetricRegistry registry) {
-        final String className = "org.hawkular.client.dropwizard.HawkularReporter";
+        final String className = "org.hawkular.metrics.dropwizard.HawkularReporter";
         if (!isClassAvailable(className)) {
             log.error("Tried to enable HawkularReporter, but class {} was not found", className);
             return false;
