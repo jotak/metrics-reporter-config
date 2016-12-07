@@ -14,6 +14,10 @@
 
 package com.addthis.metrics3.reporter.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -25,10 +29,11 @@ import org.hawkular.metrics.dropwizard.HawkularReporterNullableConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.addthis.metrics.reporter.config.AbstractMetricReporterConfig;
+import com.addthis.metrics.reporter.config.AbstractHostPortReporterConfig;
+import com.addthis.metrics.reporter.config.HostPort;
 import com.codahale.metrics.MetricRegistry;
 
-public class HawkularReporterConfig extends AbstractMetricReporterConfig implements MetricsReporterConfigThree,
+public class HawkularReporterConfig extends AbstractHostPortReporterConfig implements MetricsReporterConfigThree,
         HawkularReporterNullableConfig {
 
     private static final Logger log = LoggerFactory.getLogger(HawkularReporterConfig.class);
@@ -39,13 +44,11 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     @NotNull
     private String tenant;
     @Valid
-    private String prefix;
-    @Valid
     private String bearerToken;
     @Valid
     private Map<String, String> headers;
     @Valid
-    private Map<String, String> globalTags;
+    private Map<String, String> globalTags = new HashMap<>();
     @Valid
     private Map<String, Map<String, String>> perMetricTags;
     @Valid
@@ -53,6 +56,7 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     private Long tagsCacheDuration;
     @Valid
     private Boolean autoTagging;
+    @Valid
 
     @Override
     public String getUsername() {
@@ -80,12 +84,9 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
         this.tenant = tenant;
     }
 
+    @Override
     public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+        return getResolvedPrefix();
     }
 
     public String getBearerToken() {
@@ -109,7 +110,7 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
     }
 
     public void setGlobalTags(Map<String, String> globalTags) {
-        this.globalTags = globalTags;
+        this.globalTags.putAll(globalTags);
     }
 
     public Map<String, Map<String, String>> getPerMetricTags() {
@@ -134,6 +135,22 @@ public class HawkularReporterConfig extends AbstractMetricReporterConfig impleme
 
     public void setAutoTagging(Boolean autoTagging) {
         this.autoTagging = autoTagging;
+    }
+
+    public Boolean getEnableHostnameTag() {
+        return globalTags.get("hostname") != null;
+    }
+
+    public void setEnableHostnameTag(Boolean enableHostnameTag) {
+        try {
+            globalTags.put("hostname", InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Failed to acquire hostname", e);
+        }
+    }
+
+    @Override public List<HostPort> getFullHostList() {
+        return getHostListAndStringList();
     }
 
     public HawkularReporter enableAndGet(MetricRegistry registry) {
