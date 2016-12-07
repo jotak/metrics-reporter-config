@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hawkular.metrics.dropwizard.HawkularReporter;
@@ -44,6 +43,10 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
     @NotNull
     private String tenant;
     @Valid
+    private String username;
+    @Valid
+    private String password;
+    @Valid
     private String bearerToken;
     @Valid
     private Map<String, String> headers;
@@ -52,22 +55,27 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
     @Valid
     private Map<String, Map<String, String>> perMetricTags;
     @Valid
-    @Min(0)
-    private Long tagsCacheDuration;
-    @Valid
     private Boolean autoTagging;
-    @Valid
 
     @Override
     public String getUsername() {
-        return null;
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
     public String getUri() {
         return uri;
     }
@@ -89,6 +97,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         return getResolvedPrefix();
     }
 
+    @Override
     public String getBearerToken() {
         return bearerToken;
     }
@@ -97,6 +106,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.bearerToken = bearerToken;
     }
 
+    @Override
     public Map<String, String> getHeaders() {
         return headers;
     }
@@ -105,6 +115,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.headers = headers;
     }
 
+    @Override
     public Map<String, String> getGlobalTags() {
         return globalTags;
     }
@@ -113,6 +124,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.globalTags.putAll(globalTags);
     }
 
+    @Override
     public Map<String, Map<String, String>> getPerMetricTags() {
         return perMetricTags;
     }
@@ -121,14 +133,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.perMetricTags = perMetricTags;
     }
 
-    public Long getTagsCacheDuration() {
-        return tagsCacheDuration;
-    }
-
-    public void setTagsCacheDuration(Long tagsCacheDuration) {
-        this.tagsCacheDuration = tagsCacheDuration;
-    }
-
+    @Override
     public Boolean getAutoTagging() {
         return autoTagging;
     }

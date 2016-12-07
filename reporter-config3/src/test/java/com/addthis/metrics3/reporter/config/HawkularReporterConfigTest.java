@@ -46,7 +46,6 @@ public class HawkularReporterConfigTest {
         assertEquals(2, hawkularReporter.getPerMetricTags().get("sample.metric.rate").size());
         assertEquals("v3", hawkularReporter.getPerMetricTags().get("sample.metric.rate").get("tag3"));
         assertEquals("v4", hawkularReporter.getPerMetricTags().get("sample.metric.rate").get("tag4"));
-        assertEquals(60000, hawkularReporter.getTagsCacheDuration());
         assertFalse(hawkularReporter.isEnableAutoTagging());
     }
 
@@ -59,7 +58,6 @@ public class HawkularReporterConfigTest {
         HawkularReporter hawkularReporter = config.getHawkular().get(0).enableAndGet(new MetricRegistry());
         assertEquals(0, hawkularReporter.getGlobalTags().size());
         assertEquals(0, hawkularReporter.getPerMetricTags().size());
-        assertEquals(600000, hawkularReporter.getTagsCacheDuration());
         assertTrue(hawkularReporter.isEnableAutoTagging());
     }
 
