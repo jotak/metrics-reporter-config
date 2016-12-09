@@ -57,6 +57,9 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
     @Valid
     private Boolean autoTagging;
     @Valid
+    private Integer failOverCacheMaxSize;
+    @Valid
+    private Long failoverCacheDuration;
 
     @Override
     public String getUsername() {
@@ -135,6 +138,22 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
 
     public void setAutoTagging(Boolean autoTagging) {
         this.autoTagging = autoTagging;
+    }
+
+    public Integer getFailoverCacheMaxSize() {
+        return failOverCacheMaxSize;
+    }
+
+    public void setFailoverCacheMaxSize(Integer failOverCacheMaxSize) {
+        this.failOverCacheMaxSize = failOverCacheMaxSize;
+    }
+
+    public Long getFailoverCacheDuration() {
+        return failoverCacheDuration;
+    }
+
+    public void setFailoverCacheDuration(Long failoverCacheDuration) {
+        this.failoverCacheDuration = failoverCacheDuration;
     }
 
     public Boolean getEnableHostnameTag() {
