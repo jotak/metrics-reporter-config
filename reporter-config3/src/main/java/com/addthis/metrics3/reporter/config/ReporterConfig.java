@@ -53,6 +53,8 @@ public class ReporterConfig extends AbstractReporterConfig {
     private List<ZabbixReporterConfig> zabbix;
     @Valid
     private List<PrometheusReporterConfig> prometheus;
+    @Valid
+    private List<HawkularReporterConfig> hawkular;
 
     public List<ConsoleReporterConfig> getConsole() {
         return console;
@@ -124,6 +126,14 @@ public class ReporterConfig extends AbstractReporterConfig {
 
     public List<PrometheusReporterConfig> getPrometheus() {
         return this.prometheus;
+    }
+
+    public List<HawkularReporterConfig> getHawkular() {
+        return hawkular;
+    }
+
+    public void setHawkular(List<HawkularReporterConfig> hawkular) {
+        this.hawkular = hawkular;
     }
 
     public boolean enableConsole(MetricRegistry registry) {
@@ -255,6 +265,20 @@ public class ReporterConfig extends AbstractReporterConfig {
         return !failures;
     }
 
+    public boolean enableHawkular(MetricRegistry registry) {
+        boolean failures = false;
+        if (hawkular == null) {
+            log.debug("Asked to enable hawkular, but it was not configured");
+            return false;
+        }
+        for (HawkularReporterConfig hawkularConfig : hawkular) {
+            if (!hawkularConfig.enable(registry)) {
+                failures = true;
+            }
+        }
+        return !failures;
+    }
+
     public boolean enableAll(MetricRegistry registry) {
         boolean enabled = false;
         if (console != null && enableConsole(registry)) {
@@ -284,6 +308,9 @@ public class ReporterConfig extends AbstractReporterConfig {
         if (prometheus != null && enablePrometheus(registry)) {
             enabled = true;
         }
+        if (hawkular != null && enableHawkular(registry)) {
+            enabled = true;
+        }
         if (!enabled) {
             log.warn("No reporters were succesfully enabled");
         }
@@ -308,6 +335,7 @@ public class ReporterConfig extends AbstractReporterConfig {
         report(riemann);
         report(zabbix);
         report(prometheus);
+        report(hawkular);
     }
 
     public static ReporterConfig loadFromFileAndValidate(String fileName) throws IOException {

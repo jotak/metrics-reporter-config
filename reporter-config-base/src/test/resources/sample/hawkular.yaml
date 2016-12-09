@@ -1,0 +1,19 @@
+hawkular:
+  -
+    tenant: 'my-tenant'
+    uri: 'https://metrics.10.1.2.2.xip.io'
+    prefix: 'pfx'
+    bearerToken: '123456'
+    headers:
+      header-key: 'header-value'
+    globalTags:
+      tag1: 'v1'
+      tag2: 'v2'
+    perMetricTags:
+      sample.metric.rate:
+        tag3: 'v3'
+        tag4: 'v4'
+    tagsCacheDuration: 60000
+    autoTagging: false
+    period: 2
+    timeunit: 'SECONDS'
