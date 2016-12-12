@@ -52,9 +52,6 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
     @Valid
     private Map<String, Map<String, String>> perMetricTags;
     @Valid
-    @Min(0)
-    private Long tagsCacheDuration;
-    @Valid
     private Boolean autoTagging;
     @Valid
     private Integer failOverCacheMaxSize;
@@ -122,14 +119,6 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
 
     public void setPerMetricTags(Map<String, Map<String, String>> perMetricTags) {
         this.perMetricTags = perMetricTags;
-    }
-
-    public Long getTagsCacheDuration() {
-        return tagsCacheDuration;
-    }
-
-    public void setTagsCacheDuration(Long tagsCacheDuration) {
-        this.tagsCacheDuration = tagsCacheDuration;
     }
 
     public Boolean getAutoTagging() {
