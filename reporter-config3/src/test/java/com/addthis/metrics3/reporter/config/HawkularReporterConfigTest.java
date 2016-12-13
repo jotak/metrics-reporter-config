@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 import org.hawkular.metrics.dropwizard.HawkularReporter;
 import org.junit.Test;
@@ -42,10 +43,11 @@ public class HawkularReporterConfigTest {
         assertEquals(2, hawkularReporter.getGlobalTags().size());
         assertEquals("v1", hawkularReporter.getGlobalTags().get("tag1"));
         assertEquals("v2", hawkularReporter.getGlobalTags().get("tag2"));
-        assertEquals(1, hawkularReporter.getPerMetricTags().size());
-        assertEquals(2, hawkularReporter.getPerMetricTags().get("sample.metric.rate").size());
-        assertEquals("v3", hawkularReporter.getPerMetricTags().get("sample.metric.rate").get("tag3"));
-        assertEquals("v4", hawkularReporter.getPerMetricTags().get("sample.metric.rate").get("tag4"));
+        Map<String, String> metricTags = hawkularReporter.getTagsForMetrics("sample.metric.rate");
+        assertEquals("v3", metricTags.get("tag3"));
+        assertEquals("v4", metricTags.get("tag4"));
+        metricTags = hawkularReporter.getTagsForMetrics("sample.metric.domain.12456");
+        assertEquals("v5", metricTags.get("tag5"));
         assertFalse(hawkularReporter.isEnableAutoTagging());
     }
 
@@ -57,7 +59,8 @@ public class HawkularReporterConfigTest {
         assertEquals(1, config.getHawkular().size());
         HawkularReporter hawkularReporter = config.getHawkular().get(0).enableAndGet(new MetricRegistry());
         assertEquals(0, hawkularReporter.getGlobalTags().size());
-        assertEquals(0, hawkularReporter.getPerMetricTags().size());
+        Map<String, String> metricTags = hawkularReporter.getTagsForMetrics("sample.metric.rate");
+        assertEquals(0, metricTags.size());
         assertTrue(hawkularReporter.isEnableAutoTagging());
     }
 
