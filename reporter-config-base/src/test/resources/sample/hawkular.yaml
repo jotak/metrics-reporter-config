@@ -13,6 +13,8 @@ hawkular:
       sample.metric.rate:
         tag3: 'v3'
         tag4: 'v4'
+      "/sample\\.metric\\.domain\\..*/":
+        tag5: 'v5'
     autoTagging: false
     period: 2
     timeunit: 'SECONDS'
