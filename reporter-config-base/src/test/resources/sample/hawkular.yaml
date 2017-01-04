@@ -15,6 +15,13 @@ hawkular:
         tag4: 'v4'
       "/sample\\.metric\\.domain\\..*/":
         tag5: 'v5'
-    autoTagging: false
+    tagComposition: false
+    metricComposition:
+      sample.metric.rate:
+        - '1minrt'
+        - 'meanrt'
+      "/sample\\.metric\\.domain\\..*/":
+        - '98perc'
+        - '999perc'
     period: 2
     timeunit: 'SECONDS'

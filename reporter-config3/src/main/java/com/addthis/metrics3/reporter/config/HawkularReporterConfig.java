@@ -16,12 +16,12 @@ package com.addthis.metrics3.reporter.config;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hawkular.metrics.dropwizard.HawkularReporter;
@@ -52,11 +52,13 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
     @Valid
     private Map<String, Map<String, String>> perMetricTags;
     @Valid
-    private Boolean autoTagging;
+    private Boolean tagComposition;
     @Valid
     private Integer failOverCacheMaxSize;
     @Valid
     private Long failoverCacheDuration;
+    @Valid
+    private Map<String, Collection<String>> metricComposition;
 
     @Override
     public String getUsername() {
@@ -68,6 +70,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         return null;
     }
 
+    @Override
     public String getUri() {
         return uri;
     }
@@ -89,6 +92,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         return getResolvedPrefix();
     }
 
+    @Override
     public String getBearerToken() {
         return bearerToken;
     }
@@ -97,6 +101,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.bearerToken = bearerToken;
     }
 
+    @Override
     public Map<String, String> getHeaders() {
         return headers;
     }
@@ -105,6 +110,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.headers = headers;
     }
 
+    @Override
     public Map<String, String> getGlobalTags() {
         return globalTags;
     }
@@ -113,6 +119,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.globalTags.putAll(globalTags);
     }
 
+    @Override
     public Map<String, Map<String, String>> getPerMetricTags() {
         return perMetricTags;
     }
@@ -121,14 +128,16 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.perMetricTags = perMetricTags;
     }
 
-    public Boolean getAutoTagging() {
-        return autoTagging;
+    @Override
+    public Boolean getTagComposition() {
+        return tagComposition;
     }
 
-    public void setAutoTagging(Boolean autoTagging) {
-        this.autoTagging = autoTagging;
+    public void setTagComposition(Boolean tagComposition) {
+        this.tagComposition = tagComposition;
     }
 
+    @Override
     public Integer getFailoverCacheMaxSize() {
         return failOverCacheMaxSize;
     }
@@ -137,6 +146,7 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         this.failOverCacheMaxSize = failOverCacheMaxSize;
     }
 
+    @Override
     public Long getFailoverCacheDuration() {
         return failoverCacheDuration;
     }
@@ -157,7 +167,17 @@ public class HawkularReporterConfig extends AbstractHostPortReporterConfig imple
         }
     }
 
-    @Override public List<HostPort> getFullHostList() {
+    @Override
+    public Map<String, Collection<String>> getMetricComposition() {
+        return metricComposition;
+    }
+
+    public void setMetricComposition(Map<String, Collection<String>> metricsConversion) {
+        this.metricComposition = metricsConversion;
+    }
+
+    @Override
+    public List<HostPort> getFullHostList() {
         return getHostListAndStringList();
     }
 
