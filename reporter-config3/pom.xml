@@ -115,7 +115,7 @@
             <groupId>org.hawkular.metrics</groupId>
             <artifactId>hawkular-dropwizard-reporter</artifactId>
             <classifier>shaded</classifier>
-            <version>0.1.0</version>
+            <version>0.1.1-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

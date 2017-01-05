@@ -48,7 +48,7 @@ public class HawkularReporterConfigTest {
         assertEquals("v4", metricTags.get("tag4"));
         metricTags = hawkularReporter.getTagsForMetrics("sample.metric.domain.12456");
         assertEquals("v5", metricTags.get("tag5"));
-        assertFalse(hawkularReporter.isEnableAutoTagging());
+        assertFalse(hawkularReporter.isEnableTagComposition());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class HawkularReporterConfigTest {
         assertEquals(0, hawkularReporter.getGlobalTags().size());
         Map<String, String> metricTags = hawkularReporter.getTagsForMetrics("sample.metric.rate");
         assertEquals(0, metricTags.size());
-        assertTrue(hawkularReporter.isEnableAutoTagging());
+        assertTrue(hawkularReporter.isEnableTagComposition());
     }
 
     @Test
